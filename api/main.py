@@ -138,6 +138,15 @@ async def get_specific_chat(chat_id: str):
     return chat
 
 
+@app.delete("/chat/{chat_id}", tags=["chats"])
+async def remove_specific_chat(chat_id: str):
+    chat = await Chat.get(chat_id)
+    if not chat:
+        return {"deleted": False, "chat_id": chat_id}
+    await chat.delete()
+    return {"deleted": True, "chat_id": chat_id}
+
+
 async def on_close(chat, prompt, answer):
     question = await Question(question=prompt.rstrip(), answer=answer.rstrip()).create()
 

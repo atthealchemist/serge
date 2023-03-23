@@ -22,7 +22,7 @@
   An easy way to chat with Alpaca & other LLaMa based models.
 </h1>
 
-<form method="POST" class="p-5">
+<form method="POST" action="?/createChat" class="p-5">
   <div class="w-full pb-20">
     <div class="mx-auto w-fit pt-5">
       <button class=" mx-auto btn btn-primary ml-5" disabled={!modelAvailable}
