@@ -13,6 +13,66 @@
   $: question = "";
   $: answer = "";
 
+  let is_ctrl_down = false;
+  let is_enter_down = false;
+
+  async function on_bind() {
+    await askQuestion();
+  }
+
+  function on_key_down(event) {
+    // `keydown` event is fired while the physical key is held down.
+
+    // Assuming you only want to handle the first press, we early
+    // return to skip.
+    // if (event.repeat) return;
+
+    // In the switch-case we're updating our boolean flags whenever the
+    // desired bound keys are pressed.
+    switch (event.key) {
+      case "Control":
+        is_ctrl_down = true;
+
+        // By using `preventDefault`, it tells the Browser not to handle the
+        // key stroke for its own shortcuts or text input.
+        event.preventDefault();
+        break;
+
+      case "Enter":
+        is_enter_down = true;
+
+        event.preventDefault();
+        break;
+    }
+
+    // If both of boolean flags were truthy, that means our
+    // keybind can be activated.
+    if (is_ctrl_down && is_enter_down) {
+      on_bind();
+    }
+  }
+
+  function on_key_up(event) {
+    // `keyup` is the reverse, it fires whenever the physical key was let.
+    // go after being held down
+
+    // Just like our `keydown` handler, we need to update the boolean
+    // flags, but in the opposite direction.
+    switch (event.key) {
+      case "Control":
+        is_ctrl_down = false;
+
+        event.preventDefault();
+        break;
+
+      case "Enter":
+        is_enter_down = false;
+
+        event.preventDefault();
+        break;
+    }
+  }
+
   async function askQuestion() {
     if (prompt) {
       let data = new URLSearchParams();
@@ -111,8 +171,10 @@
       name="question"
       class="textarea textarea-bordered h-24 w-full text-lg"
       disabled={isLoading}
-      placeholder="Ask a question..."
+      placeholder="Ask a question... (Ctrl+Enter for send)"
       bind:value={prompt}
+      on:keydown={on_key_down}
+      on:keyup={on_key_up}
     />
     <button
       type="submit"
