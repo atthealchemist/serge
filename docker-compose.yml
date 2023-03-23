@@ -4,9 +4,11 @@ services:
     build: 
       context: ./api
       dockerfile: ./Dockerfile.api
+      args:
+        BINARY_PATH: ${BINARY_PATH}
     volumes:
       - ./api:/usr/src/app/
-      - /usr/src/app/weights/
+      - ./weights:/usr/src/app/weights/
       - /etc/localtime:/etc/localtime:ro 
     depends_on:
       - mongodb

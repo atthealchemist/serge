@@ -28,8 +28,6 @@ async def generate(
         "llama",
         "--model",
         "/usr/src/app/weights/" + model,
-        "--prompt",
-        prompt,
         "--n_predict",
         str(n_predict),
         "--temp",
@@ -44,37 +42,18 @@ async def generate(
         str(repeat_penalty),
         "--threads",
         "4",
-        "--n_parts",
-        "1",
+        "--prompt",
+        f"{prompt}",
     )
 
     procLlama = await asyncio.create_subprocess_exec(
         *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
 
-    answer = ""
+    stdout, _ = await procLlama.communicate()
 
-    while True:
-        chunk = await procLlama.stdout.read(chunk_size)
-
-        if not chunk:
-            return_code = await procLlama.wait()
-
-            if return_code != 0:
-                error_output = await procLlama.stderr.read()
-                raise ValueError(error_output.decode("utf-8"))
-            else:
-                return
-
-        try:
-            chunk = chunk.decode("utf-8")
-        except UnicodeDecodeError:
-            return
-
-        answer += chunk
-
-        if prompt in answer:
-            yield remove_matching_end(prompt, chunk)
+    for line in stdout.decode("utf-8"):
+        yield line
 
 
 async def get_full_prompt_from_chat(chat: Chat, simple_prompt: str):

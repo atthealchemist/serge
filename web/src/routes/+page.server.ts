@@ -5,25 +5,29 @@ export const actions = {
   createChat: async ({ fetch, request }) => {
     const formData = await request.formData();
 
-    const convertedFormEntries = Array.from(formData, ([key, value]) => [
-      key,
-      typeof value === "string" ? value : value.name,
-    ]);
-    const searchParams = new URLSearchParams(convertedFormEntries);
+    if (formData.has("action") && formData.get("action") == "start_new_chat") {
+      const convertedFormEntries = Array.from(formData, ([key, value]) => [
+        key,
+        typeof value === "string" ? value : value.name,
+      ]);
+      // const { action, ...entities } = convertedFormEntries;
+      const searchParams = new URLSearchParams(convertedFormEntries);
 
-    const r = await fetch("/api/chat?" + searchParams.toString(), {
-      method: "POST",
-    });
-    if (r.ok) {
-      const data = await r.json();
-      throw redirect(303, "/chat/" + data);
-    } else {
-      console.log(r.statusText);
+      const r = await fetch("/api/chat?" + searchParams.toString(), {
+        method: "POST",
+      });
+      if (r.ok) {
+        const data = await r.json();
+        throw redirect(303, "/chat/" + data);
+      } else {
+        console.log(r.statusText);
+      }
     }
+
   },
   deleteChat: async ({ fetch, request }) => {
     const data = await request.formData();
-    if (data.has("chat_id")) {
+    if ((data.has("action") && data.get("action") == "delete_chat") && data.has("chat_id")) {
       const chat_id = data.get("chat_id");
       const response = await fetch(`/api/chat/${chat_id}`, {
         method: "DELETE",

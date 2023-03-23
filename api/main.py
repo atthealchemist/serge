@@ -19,9 +19,7 @@ from models import Question, Chat, ChatParameters
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s:\t%(name)s\t%(message)s",
-    handlers=[
-        logging.StreamHandler()
-    ]
+    handlers=[logging.StreamHandler()],
 )
 
 # Define a logger for the current module
@@ -73,19 +71,29 @@ def dep_models_ready() -> list[str]:
     if MODEL_IS_READY is False:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={
-                "message": "models are not ready"
-            }
+            detail={"message": "models are not ready"},
         )
 
-    files = os.listdir("weights")
-    files = list(filter(lambda x: x.endswith(".bin"), files))
+    # files = os.listdir("weights")
+    # files = list(filter(lambda x: x.endswith(".bin"), files))
+    from pathlib import Path
+
+    weights_dir = Path(__file__).parent / "weights"
+    logging.info(f"{weights_dir=}")
+
+    files = [f.name for f in weights_dir.glob("**/*.bin") if f.name.startswith("ggml")]
+    logging.info(f"{files=}")
     return files
 
 
 async def convert_model_files():
     global MODEL_IS_READY
-    await anyio.to_thread.run_sync(convert_all, "weights/", "weights/tokenizer.model")
+    import os
+
+    if not os.environ.get("BINARY_PATH"):
+        await anyio.to_thread.run_sync(
+            convert_all, "weights/", "weights/tokenizer.model"
+        )
     MODEL_IS_READY = True
     logger.info("models are ready")
 
@@ -100,9 +108,7 @@ async def start_database():
 
 
 @app.get("/models", tags=["misc."])
-def list_of_installed_models(
-        models: Annotated[list[str], Depends(dep_models_ready)]
-):
+def list_of_installed_models(models: Annotated[list[str], Depends(dep_models_ready)]):
     return models
 
 
@@ -133,8 +139,9 @@ async def create_new_chat(
 @app.get("/chat/{chat_id}", tags=["chats"])
 async def get_specific_chat(chat_id: str):
     chat = await Chat.get(chat_id)
+    if not chat:
+        return {}
     await chat.fetch_all_links()
-
     return chat
 
 
@@ -178,7 +185,8 @@ async def stream_ask_a_question(chat_id: str, prompt: str):
             ):
                 await asyncio.sleep(0.1)
                 answer += output
-                yield {"event": "message", "data": output}
+                payload = {"event": "message", "data": output}
+                yield payload
         finally:
             await on_close(chat, prompt, answer)
 

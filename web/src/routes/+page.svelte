@@ -4,6 +4,7 @@
   export let data: PageData;
 
   const modelAvailable = data.models.length > 0;
+  // const modelAvailable = true;
 
   let temp = 0.1;
   let top_k: number = 50;
@@ -28,6 +29,7 @@
       <button class=" mx-auto btn btn-primary ml-5" disabled={!modelAvailable}
         >Start a new chat</button
       >
+      <input type="hidden" name="action" value="start_new_chat" />
     </div>
   </div>
 
@@ -39,11 +41,15 @@
     <div class="collapse-title text-xl font-medium">Model settings</div>
     <div class="collapse-content">
       <div class="grid grid-cols-3 gap-4 p-3 ">
-        <div
-          class="tooltip col-span-2"
-          data-tip="The higher the temperature, the more random the model output."
-        >
-          <label for="temp" class="label-text">Temperature - [{temp}]</label>
+        <div class="col-span-2">
+          <label for="temp" class="label-text">
+            Temperature
+            <br />
+            <span class="text-xs">
+              The higher the temperature, the more random the model output.
+            </span>
+          </label>
+
           <input
             name="temp"
             type="range"
@@ -53,12 +59,20 @@
             step="0.05"
             class="range range-sm mt-auto"
           />
+          <div class="w-full flex justify-between text-sm px-2">
+            <span>0</span>
+            <span class="font-bold text-amber-200">{temp}</span>
+            <span>1</span>
+          </div>
         </div>
-        <div
-          class="flex flex-col tooltip"
-          data-tip="The number of samples to consider for top_k sampling. "
-        >
-          <label for="top_k" class="label-text pb-1">top_k</label>
+        <div class="flex flex-col items-center">
+          <label for="top_k" class="label-text pb-1">
+            top_k
+            <br />
+            <span class="text-xs">
+              The number of samples to consider for top_k sampling.
+            </span>
+          </label>
           <input
             class="input input-bordered w-full max-w-xs"
             name="top_k"
@@ -70,7 +84,7 @@
         </div>
         <div class="col-span-2">
           <label for="max_length" class="label-text"
-            >Maximum generated text length in tokens - [{max_length}]</label
+            >Maximum generated text length in tokens</label
           >
           <input
             name="max_length"
@@ -81,12 +95,21 @@
             step="16"
             class="range range-sm mt-auto"
           />
+          <div class="w-full flex justify-between text-sm px-2">
+            <span>16</span>
+            <span class="font-bold text-amber-200">{max_length}</span>
+            <span>512</span>
+          </div>
         </div>
-        <div
-          class="flex flex-col tooltip"
-          data-tip="The cumulative probability of the tokens to keep for nucleus sampling. "
-        >
-          <label for="top_p" class="label-text pb-1">top_p</label>
+        <div class="flex flex-col items-center">
+          <label for="top_p" class="label-text pb-1 max-w-xs">
+            top_p
+            <br />
+            <span class="text-xs">
+              The cumulative probability of the tokens to keep for nucleus
+              sampling.
+            </span>
+          </label>
           <input
             class="input input-bordered w-full max-w-xs"
             name="top_p"
@@ -105,13 +128,15 @@
             {/each}
           </select>
         </div>
-        <div
-          class="flex flex-col tooltip"
-          data-tip="Number of tokens to look back on for deciding to apply the repeat penalty."
-        >
-          <label for="repeat_last_n" class="label-text pb-1"
-            >repeat_last_n</label
-          >
+        <div class="flex flex-col items-center">
+          <label for="repeat_last_n" class="label-text pb-1 max-w-xs">
+            repeat_last_n
+            <br />
+            <span class="text-xs">
+              Number of tokens to look back on for deciding to apply the repeat
+              penalty.
+            </span>
+          </label>
           <input
             class="input input-bordered w-full max-w-xs"
             name="repeat_last_n"
@@ -122,13 +147,15 @@
           />
         </div>
 
-        <div
-          class="flex flex-col tooltip"
-          data-tip="The weight of the penalty to avoid repeating the last repeat_last_n tokens. "
-        >
-          <label for="repeat_penalty" class="label-text pb-1"
-            >repeat_penalty</label
-          >
+        <div class="flex flex-col items-center">
+          <label for="repeat_penalty" class="label-text pb-1 max-w-xs">
+            repeat_penalty
+            <br />
+            <span class="text-xs">
+              The weight of the penalty to avoid repeating the last
+              repeat_last_n tokens.
+            </span>
+          </label>
           <input
             class="input input-bordered w-full max-w-xs"
             name="repeat_penalty"

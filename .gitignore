@@ -1,9 +1,14 @@
+weights
+models
 api/weights/**
 !api/weights/put_your_models_here.txt
 
 .env.*
 .env
 !.env.sample
+.venv
+.vscode
+chat
 
 node_modules
 __pycache__

@@ -41,7 +41,9 @@
       case "Enter":
         is_enter_down = true;
 
-        event.preventDefault();
+        // If user just want to start new line, no problem.
+        // Prevent only if [CTRL] pressed
+        if (is_ctrl_down) event.preventDefault();
         break;
     }
 
@@ -123,15 +125,17 @@
   <div class="overflow-y-auto h-[calc(100vh-10rem)] px-10">
     <div class="h-max pb-32">
       {#each questions as question}
-        <div class="chat chat-end my-2">
+        <div id="{question._id}-question-container" class="chat chat-end my-2">
           <div
+            id="{question._id}-question-text"
             class="chat-bubble chat-bubble-secondary whitespace-pre-line text-lg"
           >
             {question.question}
           </div>
         </div>
-        <div class="chat chat-start my-2">
+        <div id="{question._id}-answer-container" class="chat chat-start my-2">
           <div
+            id="{question._id}-answer-text"
             class="chat-bubble chat-bubble-primary whitespace-pre-line text-lg"
           >
             {question.answer}
@@ -139,15 +143,17 @@
         </div>
       {/each}
       {#if question}
-        <div class="chat chat-end my-2">
+        <div id="{question}-question-container" class="chat chat-end my-2">
           <div
+            id="{question}-question-text"
             class="chat-bubble chat-bubble-secondary whitespace-pre-line text-lg"
           >
             {question}
           </div>
         </div>
-        <div class="chat chat-start my-2">
+        <div id="{question}-answer-container" class="chat chat-start my-2">
           <div
+            id="{question}-answer-text"
             class="chat-bubble chat-bubble-primary whitespace-pre-line text-lg"
           >
             {#if answer === "LOADING"}
@@ -183,7 +189,21 @@
       class:loading={isLoading}
       on:click|preventDefault={askQuestion}
     >
-      Send
+      <svg
+        class="w-8 h-8"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
     </button>
   </div>
 </div>
